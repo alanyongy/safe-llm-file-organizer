@@ -1,6 +1,7 @@
 import json
 from typing import List
-from openai import OpenAI  # or whatever LLM SDK you're using
+from openai import OpenAI
+from string import Template
 
 client = OpenAI()
 
@@ -22,7 +23,7 @@ def generate_plan(goal: str, files: List[str], root_dir: str):
 
     formatted_files = format_files(files)
 
-    prompt = prompt_template.format(
+    prompt = Template(prompt_template).substitute(
         root_dir=root_dir,
         files=formatted_files,
         goal=goal
@@ -40,6 +41,4 @@ def generate_plan(goal: str, files: List[str], root_dir: str):
     )
 
     content = response.choices[0].message.content
-
-    print(content)
     return json.loads(content)

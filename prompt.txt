@@ -63,10 +63,10 @@ OUTPUT FORMAT EXAMPLE:
 Now generate the plan for the following: 
 
 Root Directory:
-{root_dir}
+$root_dir
 
 Folders and files to organize:
-{files}
+$files
 
-Goal:
-{goal}
+User goal:
+$goal

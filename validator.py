@@ -41,7 +41,8 @@ def validate_plan(plan: List[Dict], root_dir: str) -> List[Dict]:
 
     for action in plan:
         validated_action = validate_action(action, root_dir)
-        validated_actions.append(validated_action)
+        if validated_action is not None:
+            validated_actions.append(validated_action)
 
     return validated_actions
 
@@ -61,24 +62,27 @@ def validate_action(action: Dict, root_dir: str) -> Dict:
 
     Returns:
         The validated action dictionary (unchanged if valid).
-
-    Raises:
-        ValueError: If the action is malformed or unsupported.
+        None if action is invalid.
     """
 
     if "action" not in action:
-        raise ValueError("Missing action type")
+        print("Discarding action: Missing action:" + action)
+        return
 
     if action["action"] not in ALLOWED_ACTIONS:
-        raise ValueError(f"Invalid action: {action['action']}")
+        print("Discarding action: Illegal action: " + {action['action']})
+        return
 
     if action["action"] == "move_item":
-        validate_move(action, root_dir)
+        move_error = validate_move(action, root_dir)
+        if move_error:
+            print(f"Discarding action: {move_error}")
+            return None
 
     return action
 
 
-def validate_move(action: Dict, root_dir: str):
+def validate_move(action: Dict, root_dir: str) -> str:
     """
     Validates a move_item action to ensure filesystem safety.
 
@@ -91,18 +95,22 @@ def validate_move(action: Dict, root_dir: str):
         action: Move action containing 'source' and 'destination_folder'
         root_dir: Allowed root directory boundary
 
-    Raises:
-        ValueError: If path constraints or safety rules are violated.
+    Returns:
+        Empty string if move action is valid
+        Corresponding error message if an issue is found.
     """
 
-    src = action["source"]
-    dst = action["destination_folder"]
+    src = os.path.abspath(action["source"])
+    dst = os.path.abspath(action["destination_folder"])
+    root_dir = os.path.abspath(root_dir)
 
     if not os.path.exists(src):
-        raise ValueError(f"Source does not exist: {src}")
+        return f"File does not exist: {src}"
 
-    if root_dir not in src:
-        raise ValueError("Source outside allowed directory")
+    if os.path.commonpath([src, root_dir]) != root_dir:
+        return f"File outside allowed directory: {src}"
 
     if not isinstance(dst, str) or len(dst) == 0:
-        raise ValueError("Invalid destination folder")
+        return f"Invalid destination folder {dst}"
+    
+    return ""

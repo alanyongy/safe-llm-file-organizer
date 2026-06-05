@@ -22,7 +22,8 @@ def list_files(path: str) -> List[str]:
     """
 
     if not os.path.isdir(path):
-        raise ValueError(f"Invalid directory: {path}")
+        print(f"Invalid directory: {path}")
+        raise SystemExit
 
     items = []
     for file_name in os.listdir(path):
@@ -66,6 +67,7 @@ def move_item(src: str, dst_folder: str) -> None:
             counter += 1
 
     shutil.move(src, dst_path)
+    print("Moved   " + name + "   to   " + dst_path)
 
 def create_folder(path: str) -> None:
     """
@@ -75,4 +77,5 @@ def create_folder(path: str) -> None:
         path: Folder path to create
     """
     os.makedirs(path, exist_ok=True)
+    print("Created folder   " + os.path.basename(path) + "   at   " + path)
 
