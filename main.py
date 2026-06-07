@@ -1,10 +1,27 @@
+"""
+Main orchestration entrypoint for the LLM File Organizer system.
+
+Coordinates the full organization workflow:
+- Collect user inputs
+- Scan the target directory
+- Generate an organization plan using the LLM
+- Validate the generated plan
+- Execute approved filesystem operations
+"""
+
 from planner import generate_plan
 from validator import validate_plan
 from actions import list_files, move_item, create_folder
 
 def execute_plan(plan):
     """
-    Executes a plan using deterministic filesystem tools.
+    Executes a validated filesystem plan.
+
+    Each action is mapped to a deterministic filesystem
+    operation exposed by the actions module.
+
+    Args:
+        plan: List of validated action dictionaries.
     """
 
     for action in plan:
@@ -21,7 +38,15 @@ def execute_plan(plan):
 
 def main():
     """
-    Main orchestration loop for the LLM File Organizer system.
+    Runs the interactive file organization workflow.
+
+    Prompts the user for:
+    - A root directory to organize
+    - An organization goal
+
+    The directory contents are scanned, an execution plan is
+    generated and validated, then the user is asked to approve
+    execution before any filesystem modifications occur.
     """
 
     # User inputs
