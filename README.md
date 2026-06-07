@@ -157,7 +157,7 @@ This also introduces a human approval checkpoint before any filesystem mutation.
 > 
 > ### Root Directory Sandboxing
 > 
-> All operations are restricted to a root directory:
+> All source files are restricted to a root directory:
 > 
 > ```
 > os.path.commonpath([src, root_dir]) == root_dir
