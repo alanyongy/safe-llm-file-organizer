@@ -77,8 +77,6 @@ The model is not allowed to:
 - invent files
 - perform operations outside schema
 
-![Generated Plan](/writeup-assets/generated_plan.png)
-
 ---
 
 ### 🛡️ Validator (validator.py)
@@ -110,7 +108,7 @@ This ensures the LLM is treated as an untrusted planner rather than an executor.
 
 </details>
 
-
+---
 ### ⚙️ Execution Layer (actions.py)
 
 The execution layer provides only safe filesystem primitives:
@@ -131,7 +129,7 @@ Key properties:
 
 ---
 
-### 🧭 Orchestration (main.py)
+### 🧭 Orchestration (file_organizer.py)
 
 The main workflow:
 
@@ -146,69 +144,70 @@ The main workflow:
 This introduces a human approval checkpoint before any filesystem mutation.
 
 ## 🧠 Technical Breakdown
-
-<details>
-<summary><strong>Click to Expand: Planning & Validation Design</strong></summary>
-
-### LLM Planning Layer
-
-The LLM is constrained through:
-
-- strict JSON output requirement
-- predefined action schema
-- prompt-level restrictions
-- no reasoning output allowed
-
-This ensures structured machine-readable output.
+### Planning & Validation Design
+*<sup> Architecture details covering constrained planning, deterministic validation, and sandboxed execution. </sup>*
+> <details>
+> <summary><strong>Click to Expand</strong></summary>  
+> 
+> ### LLM Planning Layer
+> 
+> The LLM is constrained through:
+> 
+> - strict JSON output requirement
+> - predefined action schema
+> - prompt-level restrictions
+> - no reasoning output allowed
+> 
+> This ensures structured machine-readable output.
+> 
+> ---
+> 
+> ### Validation Strategy
+> 
+> Validation is designed as a second independent safety system.
+> 
+> It checks:
+> 
+> - Schema correctness
+> - Action whitelist compliance
+> - Path safety constraints
+> - System-defined limits
+> 
+> Even if the model produces malicious or malformed output, it is filtered before execution.
+> 
+> ---
+> 
+> ### Root Directory Sandboxing
+> 
+> All operations are restricted to a root directory:
+> 
+> ```
+> os.path.commonpath([src, root_dir]) == root_dir
+> ```
+> 
+> This prevents accidental or malicious access to:
+> 
+> - system files
+> - user directories outside scope
+> - sensitive OS locations
+> 
+> ---
+> 
+> ### Why This Architecture Works
+> 
+> This design mirrors production AI agent systems:
+> 
+> - LLM = probabilistic planner
+> - Validator = deterministic safety layer
+> - Executor = minimal trusted toolset
+> 
+> This separation ensures controllability and reduces risk.
+> 
+> </details>
 
 ---
 
-### Validation Strategy
-
-Validation is designed as a second independent safety system.
-
-It checks:
-
-- Schema correctness
-- Action whitelist compliance
-- Path safety constraints
-- System-defined limits
-
-Even if the model produces malicious or malformed output, it is filtered before execution.
-
----
-
-### Root Directory Sandboxing
-
-All operations are restricted to a root directory:
-
-```
-os.path.commonpath([src, root_dir]) == root_dir
-```
-
-This prevents accidental or malicious access to:
-
-- system files
-- user directories outside scope
-- sensitive OS locations
-
----
-
-### Why This Architecture Works
-
-This design mirrors production AI agent systems:
-
-- LLM = probabilistic planner
-- Validator = deterministic safety layer
-- Executor = minimal trusted toolset
-
-This separation ensures controllability and reduces risk.
-
-</details>
-
----
-
-### ⚠️ Limitations
+## ⚠️ Limitations
 
 - No recursive directory scanning (only top-level files)
 - No formal schema validation (manual JSON parsing)
@@ -218,28 +217,31 @@ This separation ensures controllability and reduces risk.
 
 ---
 
-### 🚀 How to Run
+## 🚀 Demo & How to Run
 
 ```bash
 python file_organizer.py
 ```
 1. Enter directory path and organization goal as prompted
 
-![Unorganized Files](/writeup-assets/unorganized_files.png)
+![Unorganized Files](/writeup-assets/unorganized_files.png)  
+<sub>*Directory with unorganized files*</sub>
 
+---
 2. Review detected files and generated plan
 
-![Generated Plan](/writeup-assets/generated_plan.png)
+![Generated Plan](/writeup-assets/generated_plan.png)  
+<sub>*Default goal of organizing all top-level files into subdirectories at the root directory was used for this demo*</sub>
 
+---
 3. Execute safe filesystem operations
 
-![Organized Files (Default)](/writeup-assets/organized_files_default.png)
-
-![Organized Files (Custom)](/writeup-assets/organized_files_custom.png)
+![Organized Files (Default)](/writeup-assets/organized_files_default.png)  
+<sub>*Resulting file structure post execution*</sub>
 
 ---
 
-### 📌 Summary
+## 📌 Summary
 
 This project demonstrates a **safe AI agent architecture** for filesystem automation, emphasizing:
 
