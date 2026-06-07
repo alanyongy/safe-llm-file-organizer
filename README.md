@@ -79,11 +79,8 @@ The model is not allowed to:
 
 ### 🛡️ Validator (validator.py)
 
-The validator is the primary safety layer.
-
-It enforces:
-
-- Allowed action types only
+The validator is the primary safety layer, enforcing:
+- Allowed action types
 - Maximum action limits
 - Root directory confinement
 - Existence checks for source paths
