@@ -1,2 +1,233 @@
-LLM File Organizer (Controlled Execution System)
-For Windows
+# 🧠 Safe LLM File Organizer (2026)
+
+A safety-first AI-powered file organization system that converts natural language goals into structured filesystem operations using an LLM planning layer with deterministic validation and execution guards.
+
+---
+
+## 🔧 Overview
+
+This program demonstrates a constrained AI agent architecture for filesystem automation.
+
+Instead of allowing an LLM to directly manipulate files, the system:
+
+- Converts user intent → structured execution plan (LLM)
+- Validates and sanitizes the plan (deterministic guardrails)
+- Executes only approved filesystem operations
+
+This separation makes the system significantly safer and more controllable than typical “LLM runs code” approaches.
+
+---
+
+## 🎯 Key Features
+
+- Natural language file organization via LLM planning
+- Structured JSON-based execution plans
+- Deterministic safety validator layer
+- Restricted filesystem operations (no arbitrary code execution)
+- Root-directory sandbox enforcement
+- Duplicate-safe file moves (auto-renaming)
+- Human-in-the-loop approval before execution
+- Modular architecture separating planning, validation, and execution
+
+---
+
+## 🧠 System Architecture
+
+The system follows a strict pipeline:
+
+```
+User Input
+   ↓
+LLM Planner (plan generation)
+   ↓
+Validator (safety + structure checks)
+   ↓
+Execution Engine (deterministic actions)
+   ↓
+Filesystem changes
+```
+
+This ensures the LLM never directly performs unsafe operations.
+
+---
+
+## 🧩 Core Components
+
+### 📌 Planner (planner.py)
+
+The planner converts:
+
+- file list
+- root directory
+- user goal
+
+into a structured JSON plan.
+
+It uses a fixed prompt that restricts output to:
+
+- `move_item`
+- `create_folder`
+
+The model is not allowed to:
+- execute code
+- invent files
+- perform operations outside schema
+
+---
+
+### 🛡️ Validator (validator.py)
+
+The validator is the primary safety layer.
+
+It enforces:
+
+- Allowed action types only
+- Maximum action limits
+- Root directory confinement
+- Existence checks for source paths
+- Structural validation of each action
+
+<details>
+<summary>Security Model Details</summary>
+
+The validator acts as a trust boundary between AI output and system execution.
+
+Key protections:
+
+- Blocks unknown actions
+- Rejects invalid or malformed actions
+- Prevents file operations outside the allowed root directory
+- Filters out unsafe or incomplete plans
+- Limits plan size to prevent abuse
+
+This ensures the LLM is treated as an untrusted planner rather than an executor.
+
+</details>
+
+
+### ⚙️ Execution Layer (actions.py)
+
+The execution layer provides only safe filesystem primitives:
+
+- `move_item(src, dst_folder)`
+- `create_folder(path)`
+- `list_files(path)`
+
+Key properties:
+
+- Deterministic behavior
+- No LLM access
+- Auto-creation of missing folders
+- Collision-safe file moves (auto-renaming)
+- No overwrite risk
+
+---
+
+### 🧭 Orchestration (main.py)
+
+The main workflow:
+
+1. User enters directory + goal
+2. Files are scanned
+3. LLM generates a plan
+4. Plan is printed for review
+5. Validator filters unsafe actions
+6. User approves execution
+7. System executes actions
+
+This introduces a human approval checkpoint before any filesystem mutation.
+
+## 🧠 Technical Breakdown
+
+<details>
+<summary><strong>Click to Expand: Planning & Validation Design</strong></summary>
+
+### LLM Planning Layer
+
+The LLM is constrained through:
+
+- strict JSON output requirement
+- predefined action schema
+- prompt-level restrictions
+- no reasoning output allowed
+
+This ensures structured machine-readable output.
+
+---
+
+### Validation Strategy
+
+Validation is designed as a second independent safety system.
+
+It checks:
+
+- Schema correctness
+- Action whitelist compliance
+- Path safety constraints
+- System-defined limits
+
+Even if the model produces malicious or malformed output, it is filtered before execution.
+
+---
+
+### Root Directory Sandboxing
+
+All operations are restricted to a root directory:
+
+```
+os.path.commonpath([src, root_dir]) == root_dir
+```
+
+This prevents accidental or malicious access to:
+
+- system files
+- user directories outside scope
+- sensitive OS locations
+
+---
+
+### Why This Architecture Works
+
+This design mirrors production AI agent systems:
+
+- LLM = probabilistic planner
+- Validator = deterministic safety layer
+- Executor = minimal trusted toolset
+
+This separation ensures controllability and reduces risk.
+
+</details>
+
+---
+
+### ⚠️ Limitations
+
+- No recursive directory scanning (only top-level files)
+- No formal schema validation (manual JSON parsing)
+- Destination path trust not fully restricted to root boundary
+- Single-pass planning (no repair/regeneration loop)
+- LLM output may occasionally fail JSON formatting
+
+---
+
+### 🚀 How to Run
+
+```bash
+python file_organizer.py
+```
+1. Enter directory path and organization goal as prompted
+2. Review detected files and generated plan
+3. Execute safe filesystem operations
+
+---
+
+### 📌 Summary
+
+This project demonstrates a **safe AI agent architecture** for filesystem automation, emphasizing:
+
+- structured planning
+- deterministic validation
+- sandboxed execution
+- human-in-the-loop safety
+
+It serves as a foundation for more advanced AI agent systems beyond file organization.
