@@ -89,23 +89,6 @@ It enforces:
 - Existence checks for source paths
 - Structural validation of each action
 
-<details>
-<summary>Security Model Details</summary>
-
-The validator acts as a trust boundary between AI output and system execution.
-
-Key protections:
-
-- Blocks unknown actions
-- Rejects invalid or malformed actions
-- Prevents file operations outside the allowed root directory
-- Filters out unsafe or incomplete plans
-- Limits plan size to prevent abuse
-
-This ensures the LLM is treated as an untrusted planner rather than an executor.
-
-</details>
-
 ---
 ### ⚙️ Execution Layer (actions.py)
 
