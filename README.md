@@ -57,7 +57,7 @@ This ensures the LLM never directly performs unsafe operations.
 
 ### 📌 Planner (planner.py)
 
-The planner converts:
+The planner prompts and LLM via API to convert:
 1. File list
 2. Root directory
 3. User goal
