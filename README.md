@@ -58,17 +58,15 @@ This ensures the LLM never directly performs unsafe operations.
 ### 📌 Planner (planner.py)
 
 The planner converts:
-
-- file list
-- root directory
-- user goal
+1. File list
+2. Root directory
+3. User goal
 
 into a structured JSON plan.
 
 ![Custom Goal](/writeup-assets/custom_goal.png)
 
-It uses a fixed prompt that restricts output to:
-
+It uses a fixed prompt that restricts output to a json mapping of:
 - `move_item`
 - `create_folder`
 
@@ -141,7 +139,7 @@ The main workflow:
 6. User approves execution
 7. System executes actions
 
-This introduces a human approval checkpoint before any filesystem mutation.
+This also introduces a human approval checkpoint before any filesystem mutation.
 
 ## 🧠 Technical Breakdown
 ### Planning & Validation Design
