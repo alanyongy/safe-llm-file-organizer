@@ -2,6 +2,8 @@
 
 A safety-first AI-powered file organization system that converts natural language goals into structured filesystem operations using an LLM planning layer with deterministic validation and execution guards.
 
+![File Detection](/writeup-assets/file_detection.png)
+
 ---
 
 ## 🔧 Overview
@@ -63,6 +65,8 @@ The planner converts:
 
 into a structured JSON plan.
 
+![Custom Goal](/writeup-assets/custom_goal.png)
+
 It uses a fixed prompt that restricts output to:
 
 - `move_item`
@@ -72,6 +76,8 @@ The model is not allowed to:
 - execute code
 - invent files
 - perform operations outside schema
+
+![Generated Plan](/writeup-assets/generated_plan.png)
 
 ---
 
@@ -120,6 +126,8 @@ Key properties:
 - Auto-creation of missing folders
 - Collision-safe file moves (auto-renaming)
 - No overwrite risk
+
+![Plan Execution](/writeup-assets/plan_execution.png)
 
 ---
 
@@ -216,8 +224,18 @@ This separation ensures controllability and reduces risk.
 python file_organizer.py
 ```
 1. Enter directory path and organization goal as prompted
+
+![Unorganized Files](/writeup-assets/unorganized_files.png)
+
 2. Review detected files and generated plan
+
+![Generated Plan](/writeup-assets/generated_plan.png)
+
 3. Execute safe filesystem operations
+
+![Organized Files (Default)](/writeup-assets/organized_files_default.png)
+
+![Organized Files (Custom)](/writeup-assets/organized_files_custom.png)
 
 ---
 
